@@ -4,7 +4,11 @@ import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
+
+import java.util.Calendar;
+import java.util.Date;
 
 import static com.dieam.reactnativepushnotification.modules.RNPushNotification.LOG_TAG;
 
@@ -20,7 +24,15 @@ public class RNPushNotificationPublisher extends BroadcastReceiver {
 
         Application applicationContext = (Application) context.getApplicationContext();
 
-        new RNPushNotificationHelper(applicationContext)
-                .sendToNotificationCentre(intent.getExtras());
+        Bundle bundle = intent.getExtras();
+        if (bundle != null && isShowNotification(bundle, currentTime)){
+            new RNPushNotificationHelper(applicationContext)
+                    .sendToNotificationCentre(bundle);
+        }
+    }
+
+    private boolean isShowNotification(Bundle bundle, long currentTime){
+        long fireDate = (long) bundle.getDouble("fireDate");
+        return Math.abs(fireDate - currentTime) < (1000 * 59);
     }
 }
